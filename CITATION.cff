@@ -1,0 +1,54 @@
+cff-version: 1.2.0
+message: >-
+  If you use DrivAerRim, please cite the dataset and the source DeepWheel
+  collection. Replace this citation with the peer-reviewed DrivAerRim article
+  when its DOI becomes available.
+title: >-
+  DrivAerRim: A full vehicle simulation dataset with rotating wheels for
+  data-driven aerodynamic design of rims
+type: dataset
+authors:
+  - family-names: Xia
+    given-names: Chao
+    affiliation: Chalmers University of Technology
+    email: chao.xia@chalmers.se
+  - family-names: Lewerth
+    given-names: Carl
+    affiliation: Chalmers University of Technology
+  - family-names: Zeng
+    given-names: Xi
+    affiliation: Tongji University
+  - family-names: Vdovin
+    given-names: Alexey
+    affiliation: Chalmers University of Technology
+  - family-names: Sebben
+    given-names: Simone
+    affiliation: Chalmers University of Technology
+  - family-names: Jia
+    given-names: Qing
+    affiliation: Tongji University
+  - family-names: Yang
+    given-names: Zhigang
+    affiliation: Tongji University
+date-released: "2026-07-07"
+url: https://huggingface.co/datasets/BeyondXia1212/DrivAerRim
+license: CC-BY-NC-4.0
+abstract: >-
+  DrivAerRim is a full vehicle computational fluid dynamics dataset that
+  isolates the aerodynamic effects of rim geometry. It contains steady RANS
+  simulations of 904 non-parametric DeepWheel rim geometries installed on a
+  fixed, full scale DrivAer estateback. Rim rotation is represented using
+  moving reference frame regions and tyre rotation using rotating wall
+  boundary conditions. The release contains geometry, integrated aerodynamic
+  coefficients, accumulated drag, surface pressure and wall shear stress,
+  prescribed slices, local wheel volumes, a wake volume, preview images, and
+  convergence histories.
+keywords:
+  - computational fluid dynamics
+  - automotive aerodynamics
+  - rim aerodynamics
+  - wheel aerodynamics
+  - Reynolds-averaged Navier-Stokes
+  - moving reference frame
+  - geometric deep learning
+  - surrogate modelling
