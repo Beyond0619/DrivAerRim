@@ -1,6 +1,6 @@
 # License
 
-The DrivAerRim dataset and the documentation and figures in this repository are licensed under the **Creative Commons Attribution-NonCommercial 4.0 International License (CC BY-NC 4.0)**, unless otherwise noted.
+The DrivAerRim dataset and the scripts, documentation, and figures in this repository are licensed under the **Creative Commons Attribution-NonCommercial 4.0 International License (CC BY-NC 4.0)**, unless otherwise noted.
 
 The full license text is available at:
 

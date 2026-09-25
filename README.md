@@ -12,6 +12,7 @@
 
 [Dataset](https://huggingface.co/datasets/BeyondXia1212/DrivAerRim) ·
 [Files](https://huggingface.co/datasets/BeyondXia1212/DrivAerRim/tree/main) ·
+[Scripts](Codes/) ·
 [Citation](#citation) ·
 [Contact](#contact)
 
@@ -94,6 +95,20 @@ Surface records contain mean pressure and mean wall shear stress. Slice and volu
     <td align="center">Wheel-related drag contributions</td>
   </tr>
 </table>
+
+## Code
+
+The [`Codes/`](Codes/) directory contains the released workflow and analysis scripts:
+
+| Script | Purpose |
+|---|---|
+| [`prepare.sh`](Codes/prepare.sh) | Creates rim case directories from a common template and installs the selected rim geometry |
+| [`run.sh`](Codes/run.sh) | SLURM template for the STAR-CCM+ preparation, meshing, solution, and postprocessing stages |
+| [`post.sh`](Codes/post.sh) | GPU job template for field and image export after a completed simulation |
+| [`plot_all_rims_bins.py`](Codes/plot_all_rims_bins.py) | Compares accumulated drag curves across the rim cases |
+| [`plot_rim_aero_analysis.py`](Codes/plot_rim_aero_analysis.py) | Analyses complete vehicle and wheel component aerodynamic coefficients across all cases |
+
+The shell scripts use public placeholders for cluster account, email, license, and path settings. They are designed for a SLURM environment with Simcenter STAR-CCM+ 2506 and case directories containing the associated STARCFD macros and resources. See the [code documentation](Codes/README.md) for configuration and examples.
 
 ## Download
 
