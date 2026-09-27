@@ -1,11 +1,13 @@
 #!/usr/bin/env bash
 #SBATCH -J jobname
-#SBATCH -N 32 -n 1024
+#SBATCH -N 90 -n 2880
 #SBATCH -A -
 #SBATCH -t 48:00:00
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=-
 
+# This allocation matches the 2,880 CPU cores per dataset case reported in the
+# manuscript. Adapt node and task requests to the target cluster if necessary.
 # =============================================================================
 # Rim1_Tetralith_template: run Prep -> Surf -> Vol -> Run -> Post on Tetralith
 # Submit from the case directory (where settings.toml and repo/ live).

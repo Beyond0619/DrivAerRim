@@ -86,8 +86,14 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--rim-pad",
         type=int,
-        default=env_int("RIM_PAD", 3),
-        help="Zero-padding width for rim identifiers; default: 3.",
+        default=env_int("RIM_PAD", 4),
+        help="Zero-padding width for Rim case directories; default: 4.",
+    )
+    parser.add_argument(
+        "--nas-pad",
+        type=int,
+        default=env_int("NAS_PAD", 3),
+        help="Zero-padding width for source NAS identifiers; default: 3.",
     )
     parser.add_argument(
         "--range-size",
@@ -217,7 +223,7 @@ def prepare_case(
     source = source_nas_path(
         rims_nas_dir,
         index,
-        args.rim_pad,
+        args.nas_pad,
         args.nas_layout,
         args.range_size,
     )
@@ -253,6 +259,8 @@ def main() -> int:
     args = parse_args()
     if args.rim_pad < 0:
         raise SystemExit("--rim-pad must be zero or greater.")
+    if args.nas_pad < 0:
+        raise SystemExit("--nas-pad must be zero or greater.")
     if args.range_size <= 0:
         raise SystemExit("--range-size must be greater than zero.")
 

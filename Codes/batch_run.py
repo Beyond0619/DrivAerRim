@@ -119,8 +119,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--rim-pad",
         type=int,
-        default=env_int("RIM_PAD", 3),
-        help="Zero-padding width for Rim directory names; default: 3.",
+        default=env_int("RIM_PAD", 4),
+        help="Zero-padding width for Rim directory names; default: 4.",
     )
     parser.add_argument(
         "--submit-cmd",

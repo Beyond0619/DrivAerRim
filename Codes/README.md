@@ -11,8 +11,8 @@ represented by `-` and must be configured locally before use.
   `all_means_*.csv` schema.
 - `plot_all_rims_bins.py`: plots accumulated drag curves from
   `Cd_Accumulated_Combined.csv`, or from legacy `Rim*/NumData/Binned.csv` data.
-- `prepare.py`: creates numbered case directories from a template and installs
-  the corresponding rim NAS file.
+- `prepare.py`: creates four-digit `RimXXXX` case directories from a template
+  and installs the corresponding three-digit source rim NAS file.
 - `batch_run.py`: submits and monitors selected cases with bounded concurrency.
 - `prepare.sh` and `batch_run.sh`: compatibility wrappers for the Python tools.
 - `run.sh` and `post.sh`: Slurm scripts for STAR-CCM+ solve and GPU
@@ -72,9 +72,15 @@ python3 prepare.py \
   --rims-nas-dir ./rim_nas \
   --output-parent ./cases \
   --indices "1 2" \
+  --rim-pad 4 --nas-pad 3 \
   --nas-layout subdir_range \
   --dry-run
 ```
+
+The default output names are `Rim0001`, `Rim0002`, and so on. Source NAS files
+retain three-digit identifiers such as `001`; use `--rim-pad` and `--nas-pad`
+separately if either naming convention differs. Existing three-digit case
+directories remain selectable with `--rim-pad 3`.
 
 Remove `--dry-run` after checking the paths. `--strict` returns a non-zero exit
 status if any requested NAS source is missing. Existing cases are not deleted;
@@ -95,6 +101,7 @@ Validate case selection and the submit command first:
 python3 batch_run.py \
   --rim-parent ./cases \
   --indices "1 2" \
+  --rim-pad 4 \
   --batch-system slurm \
   --submit-cmd "sbatch run.sh" \
   --check
@@ -119,7 +126,8 @@ Before submitting `run.sh` or `post.sh`:
    values supplied by the environment.
 3. Set `STARCCM_MODULE` if the default module name is unavailable.
 4. Review CPU, node, GPU, memory, and wall-time requests for the target mesh and
-   cluster policy.
+   cluster policy. The released `run.sh` requests 90 nodes and 2,880 tasks,
+   matching the per-case CPU core count reported for dataset production.
 5. Provide the compiled `repo/STARCFD` classes and required dependency JARs.
 
 The full pipeline is the default:
