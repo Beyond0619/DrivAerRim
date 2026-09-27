@@ -16,7 +16,7 @@
 [Citation](#citation) ·
 [Contact](#contact)
 
-<img src="assets/vehicle_geometry.jpg" alt="DrivAer estateback geometry and wheel components used in DrivAerRim" width="100%">
+<img src="assets/vehicle_geometry.jpg" alt="Side and front views of the DrivAer estateback used in DrivAerRim" width="100%">
 
 </div>
 
@@ -27,6 +27,10 @@
 Only the rim geometry changes between cases. The vehicle, closed cooling configuration, smooth underbody, deformed Rain tyres, wheel positions, operating conditions, mesh strategy, solver settings, and exported quantities remain consistent. Each case uses the same rim design at all four wheel positions.
 
 Wheel rotation is represented using cylindrical **moving reference frame (MRF)** regions around the rims together with rotating wall boundary conditions on the tyres. This setup retains geometry-dependent flow through the rim openings while remaining practical for a large Reynolds-averaged Navier-Stokes (RANS) dataset.
+
+<p align="center">
+  <img src="assets/wheel_mrf.jpg" alt="Rotating wall tyre and moving reference frame region around the rim" width="72%">
+</p>
 
 The release supports two complementary uses:
 
@@ -87,8 +91,8 @@ Surface records contain mean pressure and mean wall shear stress. Slice and volu
 
 <table>
   <tr>
-    <td width="58%"><img src="assets/aerodynamic_coefficients.jpg" alt="Pairwise overview of aerodynamic coefficients across the 904 cases"></td>
-    <td width="42%"><img src="assets/wheel_drag_ratios.jpg" alt="Contributions of wheel-related components to complete vehicle drag"></td>
+    <td width="58%" valign="top"><img src="assets/aerodynamic_coefficients.jpg" alt="Pairwise overview of aerodynamic coefficients across the 904 cases" width="100%"></td>
+    <td width="42%" valign="top"><img src="assets/wheel_drag_ratios.jpg" alt="Vertically arranged distributions of wheel-related drag contributions" width="100%"></td>
   </tr>
   <tr>
     <td align="center">Integrated aerodynamic coefficients across all cases</td>
