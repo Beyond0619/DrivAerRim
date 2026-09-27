@@ -2,7 +2,7 @@
 
 # DrivAerRim
 
-### A full vehicle simulation dataset with rotating wheels for data-driven aerodynamic design of rims
+### A full vehicle dataset with rotating wheels for data-driven aerodynamic design of wheel rims
 
 [![Dataset](https://img.shields.io/badge/Dataset-Hugging%20Face-FFD21E?logo=huggingface&logoColor=000)](https://huggingface.co/datasets/BeyondXia1212/DrivAerRim)
 [![License](https://img.shields.io/badge/License-CC%20BY--NC%204.0-2A7F62)](LICENSE.md)
@@ -35,7 +35,7 @@ The release supports two complementary uses:
 | Item | Description |
 |---|---|
 | Cases | 904, named `Rim0001` to `Rim0904` |
-| Total size | Approximately 3.40 TB |
+| Total file size | Approximately 3.61 TB |
 | Vehicle | Full scale DrivAer estateback, closed cooling, smooth underbody |
 | Tyres | Deformed Rain pattern with longitudinal grooves and ground contact patches |
 | CFD method | Three-dimensional steady incompressible RANS |
@@ -124,7 +124,7 @@ The shell scripts use public placeholders for cluster account, email, license, a
 
 ## Download
 
-The complete data release is approximately **3.40 TB**, so targeted downloads are recommended. The Hugging Face command line client can retrieve selected directories without cloning the complete repository.
+The complete data release contains approximately **3.61 TB of files**, so targeted downloads are recommended. The Hugging Face command line client can retrieve selected directories without cloning the complete repository.
 
 ```bash
 pip install -U huggingface_hub
@@ -170,7 +170,7 @@ The accompanying manuscript is in preparation. Until a formal publication identi
 ```bibtex
 @dataset{xia2026drivaerrim,
   author    = {Xia, Chao and Lewerth, Carl and Zeng, Xi and Vdovin, Alexey and Sebben, Simone and Jia, Qing and Yang, Zhigang},
-  title     = {DrivAerRim: A full vehicle simulation dataset with rotating wheels for data-driven aerodynamic design of rims},
+  title     = {DrivAerRim: A full vehicle dataset with rotating wheels for data-driven aerodynamic design of wheel rims},
   year      = {2026},
   publisher = {Hugging Face},
   url       = {https://huggingface.co/datasets/BeyondXia1212/DrivAerRim}

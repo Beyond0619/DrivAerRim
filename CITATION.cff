@@ -4,8 +4,8 @@ message: >-
   collection. Replace this citation with the peer-reviewed DrivAerRim article
   when its DOI becomes available.
 title: >-
-  DrivAerRim: A full vehicle simulation dataset with rotating wheels for
-  data-driven aerodynamic design of rims
+  DrivAerRim: A full vehicle dataset with rotating wheels for data-driven
+  aerodynamic design of wheel rims
 type: dataset
 authors:
   - family-names: Xia
