@@ -13,7 +13,7 @@
 [Citation](#citation) ·
 [Contact](#contact)
 
-<img src="assets/vehicle_geometry.jpg" alt="Side and front views of the DrivAer estateback used in DrivAerRim" width="100%">
+<img src="assets/vehicle_geometry.jpg" alt="DrivAer estateback side and front views, smooth underbody, and wheel rotation modelling used in DrivAerRim" width="100%">
 
 </div>
 
@@ -24,10 +24,6 @@
 Only the rim geometry changes between cases. The vehicle, closed cooling configuration, smooth underbody, deformed Rain tyres, wheel positions, operating conditions, mesh strategy, solver settings, and exported quantities remain consistent. Each case uses the same rim design at all four wheel positions.
 
 Wheel rotation is represented using cylindrical **moving reference frame (MRF)** regions around the rims together with rotating wall boundary conditions on the tyres. This setup retains geometry-dependent flow through the rim openings while remaining practical for a large Reynolds-averaged Navier-Stokes (RANS) dataset.
-
-<p align="center">
-  <img src="assets/wheel_mrf.jpg" alt="Rotating wall tyre and moving reference frame region around the rim" width="72%">
-</p>
 
 The release supports two complementary uses:
 
