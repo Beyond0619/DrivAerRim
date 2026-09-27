@@ -100,6 +100,20 @@ Surface records contain mean pressure and mean wall shear stress. Slice and volu
   </tr>
 </table>
 
+The surface field overviews below compare the front left wheel for the 50 lowest and 50 highest complete vehicle $C_D$ cases. Within each image, the cases are ordered by increasing $C_D$ from left to right and then from top to bottom.
+
+<p align="center">
+  <img src="assets/wheel_pressure_extremes.jpg" alt="Surface pressure coefficient on the front left wheel for the 50 lowest and 50 highest complete vehicle drag cases" width="100%">
+  <br>
+  <em>Surface pressure coefficient on the front left wheel.</em>
+</p>
+
+<p align="center">
+  <img src="assets/wheel_skin_friction_extremes.jpg" alt="Skin friction coefficient on the front left wheel for the 50 lowest and 50 highest complete vehicle drag cases" width="100%">
+  <br>
+  <em>Skin friction coefficient on the front left wheel.</em>
+</p>
+
 ## Code
 
 The [`Codes/`](Codes/) directory contains the released workflow and analysis scripts:
