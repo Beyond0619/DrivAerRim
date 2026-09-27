@@ -82,16 +82,17 @@ Surface records contain mean pressure and mean wall shear stress. Slice and volu
 
 ### Aerodynamic overview
 
-<table>
-  <tr>
-    <td width="58%" valign="top"><img src="assets/aerodynamic_coefficients.jpg" alt="Pairwise overview of aerodynamic coefficients across the 904 cases" width="100%"></td>
-    <td width="42%" valign="top"><img src="assets/wheel_drag_ratios.jpg" alt="Vertically arranged distributions of wheel-related drag contributions" width="100%"></td>
-  </tr>
-  <tr>
-    <td align="center">Integrated aerodynamic coefficients across all cases</td>
-    <td align="center">Wheel-related drag contributions</td>
-  </tr>
-</table>
+<p align="center">
+  <img src="assets/aerodynamic_coefficients.jpg" alt="Pairwise overview of aerodynamic coefficients across the 904 cases" width="72%">
+  <br>
+  <em>Integrated aerodynamic coefficients across all cases.</em>
+</p>
+
+<p align="center">
+  <img src="assets/wheel_drag_ratios.jpg" alt="Side-by-side distributions of wheel-related drag contributions" width="100%">
+  <br>
+  <em>Wheel-related drag contributions.</em>
+</p>
 
 The surface field overviews below compare the front left wheel for the 50 lowest and 50 highest complete vehicle $C_D$ cases. Within each image, the cases are ordered by increasing $C_D$ from left to right and then from top to bottom.
 
