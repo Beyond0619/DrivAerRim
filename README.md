@@ -6,9 +6,6 @@
 
 [![Dataset](https://img.shields.io/badge/Dataset-Hugging%20Face-FFD21E?logo=huggingface&logoColor=000)](https://huggingface.co/datasets/BeyondXia1212/DrivAerRim)
 [![License](https://img.shields.io/badge/License-CC%20BY--NC%204.0-2A7F62)](LICENSE.md)
-![Cases](https://img.shields.io/badge/Rim%20cases-904-2F6F9F)
-![Data size](https://img.shields.io/badge/Data-3.40%20TB-6B5B95)
-![CFD](https://img.shields.io/badge/CFD-RANS%20%2B%20MRF-C65D3B)
 
 [Dataset](https://huggingface.co/datasets/BeyondXia1212/DrivAerRim) ·
 [Files](https://huggingface.co/datasets/BeyondXia1212/DrivAerRim/tree/main) ·
