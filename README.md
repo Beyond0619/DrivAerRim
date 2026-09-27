@@ -27,8 +27,8 @@ Wheel rotation is represented using cylindrical **moving reference frame (MRF)**
 
 The release supports two complementary uses:
 
-- controlled analysis of how rim geometry changes complete vehicle and component aerodynamics;
-- development and evaluation of geometric deep learning surrogate models for integrated coefficients and spatial surface or flow fields.
+- analysis of how rim geometry changes complete vehicle and component aerodynamics;
+- development and evaluation of geometric deep learning surrogate models for aerodynamic coefficients and surface or flow fields.
 
 ## At a glance
 
