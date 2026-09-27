@@ -79,7 +79,7 @@ The dataset covers the complete set of 904 DeepWheel designs rather than a small
 
 `XXXX` is a zero-padded case number from `0001` to `0904`. The suffixes `FL` and `RL` denote front left and rear left. The right side installations are mirrored counterparts, so the released component geometries and local spatial records focus on the left side wheel regions.
 
-Each case contains 128 slice files, 7 surface files, 5 volume files, 32 WebP previews, and one complete vehicle drag history. A small number of cases also retain additional quality control images.
+Each case contains 128 slice files, 7 surface files, 5 volume files, 32 WebP previews, and one complete vehicle drag history.
 
 ### Spatial outputs
 
