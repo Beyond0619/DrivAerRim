@@ -1,0 +1,27 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.venv-*/
+.venv*/
+
+# Local runtime and scheduler output
+batch_run.pid
+batch_run_daemon.log
+batch_Rim*.log
+hostlist.*
+log/
+slurm-*.out
+
+# Generated figures
+Figures/
+
+# Large or redistribution-restricted simulation assets
+*.sim
+*.nas
+*.jar
+
+# Editor and operating-system metadata
+.DS_Store
+*.swp
+*~

@@ -1,95 +1,153 @@
-# Workflow and analysis scripts
+# DrivAerRim workflow and analysis scripts
 
-This directory contains the released scripts used to prepare and execute DrivAerRim cases on a high performance computing system and to analyse the resulting aerodynamic data.
+This directory contains portable plotting, case-preparation, and batch-submission
+utilities for rim aerodynamics workflows. Public path and credential values are
+represented by `-` and must be configured locally before use.
 
 ## Contents
 
-| File | Role |
-|---|---|
-| `prepare.sh` | Copies a common case template, creates the requested rim cases, inserts each rim NAS file into `CAD/`, and updates SLURM job names |
-| `run.sh` | SLURM job template that calls the STARCFD Java macros for case preparation, surface meshing, volume meshing, solution, and postprocessing |
-| `post.sh` | Separate GPU postprocessing job for STAR-CCM+ field and image export |
-| `plot_all_rims_bins.py` | Plots accumulated drag curves from per-case `Binned.csv` files or the released `Cd_Accumulated_Combined.csv` file |
-| `plot_rim_aero_analysis.py` | Generates distributions, pair plots, component comparisons, and derived summaries from `Force_Coefficients_Combined.csv` |
+- `plot_rim_aero_analysis.py`: plots force-coefficient distributions and
+  relationships from `Force_Coefficients_Combined.csv` or the legacy
+  `all_means_*.csv` schema.
+- `plot_all_rims_bins.py`: plots accumulated drag curves from
+  `Cd_Accumulated_Combined.csv`, or from legacy `Rim*/NumData/Binned.csv` data.
+- `prepare.py`: creates numbered case directories from a template and installs
+  the corresponding rim NAS file.
+- `batch_run.py`: submits and monitors selected cases with bounded concurrency.
+- `prepare.sh` and `batch_run.sh`: compatibility wrappers for the Python tools.
+- `run.sh` and `post.sh`: Slurm scripts for STAR-CCM+ solve and GPU
+  post-processing stages. These remain Shell scripts because Slurm directives,
+  environment modules, and scheduler variables are Shell-native.
 
-## HPC workflow
+## Python setup
 
-The shell scripts are templates from the original Tetralith SLURM workflow. Before use, replace the public `-` placeholders and check the resource requests for the target system.
-
-### 1. Configure and prepare cases
-
-`prepare.sh` reads its settings from environment variables. The required locations are:
-
-- `TEMPLATE_DIR`: common CFD case template containing `CAD/`, `repo/`, and `resources/`;
-- `RIMS_NAS_DIR`: directory containing the preprocessed rim NAS files;
-- `OUTPUT_PARENT`: destination for the generated rim case directories.
-
-Case selection is controlled by `START` with `N` or `END`, or by an explicit space-separated `INDICES` list. `NAS_LAYOUT`, `RIM_PAD`, and `RIMS_NAS_RANGE_SIZE` describe the source geometry layout.
-
-Example:
+Python 3.10 or newer is recommended.
 
 ```bash
-TEMPLATE_DIR=/path/to/template \
-RIMS_NAS_DIR=/path/to/rim_nas \
-OUTPUT_PARENT=/path/to/cases \
-START=1 END=10 RIM_PAD=4 \
-bash prepare.sh
+python3 -m venv .venv
+source .venv/bin/activate
+python3 -m pip install -r requirements.txt
 ```
 
-Run `bash prepare.sh --help` for the compact option summary.
+The preparation and batch tools use only the Python standard library. The
+packages in `requirements.txt` are required by the plotting scripts.
 
-### 2. Configure and submit CFD jobs
+## Plot combined CSV exports
 
-Update the SLURM account, email, node and task requests, STAR-CCM+ module, `LM_PROJECT`, and `LM_LICENSE_FILE` entries in `run.sh` and `post.sh`. The scripts also support these environment settings:
-
-- `STARCFD_PYTHON` or `STARCFD_PY_ENV` for the Python runtime used by the STARCFD macros;
-- `STARCFD_POST_MODE=gpu|cpu|none` to select the postprocessing route;
-- `RUN_POST=0|1` to disable or enable postprocessing;
-- `STARCFD_POST_NP` and `STARCFD_POST_GRAPHICS` for the separate GPU postprocessing job.
-
-The case directory must contain the STARCFD macros, templates, dependencies, and settings referenced by `repo/STARCFD`. In the released `run.sh`, the solver stage is active and the earlier preparation and meshing calls are commented so that the script can resume an already meshed case. Uncomment the required stages when executing the full sequence.
-
-Typical submission from a configured case directory:
+Force coefficients:
 
 ```bash
-sbatch run.sh
+python3 plot_rim_aero_analysis.py \
+  --input ./data/Force_Coefficients_Combined.csv \
+  --output-dir ./Figures/force_coefficients
 ```
 
-The GPU postprocessing job may also be submitted independently after a `*_Finished.sim` file has been created:
+Accumulated drag:
 
 ```bash
-sbatch post.sh
+python3 plot_all_rims_bins.py \
+  --input ./data/Cd_Accumulated_Combined.csv \
+  --output ./Figures/Cd_Accumulated.jpg
 ```
 
-## Aerodynamic analysis
-
-Install the Python dependencies:
+For the legacy `Binned.csv` workflow, provide the raw-data root explicitly:
 
 ```bash
-python -m pip install -r Codes/requirements.txt
+python3 plot_all_rims_bins.py \
+  --raw-data-root ./Raw_data \
+  --rim-start 1 --rim-end 10 \
+  --output ./Figures/all_rims_bins_overlay.jpg
 ```
 
-From the repository root, analyse the released combined force coefficients with:
+The plotting scripts validate required numeric values and report invalid rows;
+they do not silently remove data points.
+
+## Prepare cases
+
+Always inspect a dry run before creating or updating cases:
 
 ```bash
-python Codes/plot_rim_aero_analysis.py \
-  --input NumData/Force_Coefficients_Combined.csv \
-  --output-dir Figures/aerodynamic_coefficients \
-  --dpi 300
+python3 prepare.py \
+  --template-dir ./template \
+  --rims-nas-dir ./rim_nas \
+  --output-parent ./cases \
+  --indices "1 2" \
+  --nas-layout subdir_range \
+  --dry-run
 ```
 
-Plot accumulated drag for all 904 cases with:
+Remove `--dry-run` after checking the paths. `--strict` returns a non-zero exit
+status if any requested NAS source is missing. Existing cases are not deleted;
+only the fixed target `CAD/rims_clean_sm_open_.nas` and the `#SBATCH -J` lines
+in `run.sh`/`post.sh` are updated. `prepare.sh` accepts the same arguments.
+
+Supported NAS layouts are:
+
+- `flat`: `rim_nas/rims_clean_sm_open_001.nas`
+- `subdir`: `rim_nas/001/rims_clean_sm_open_.nas`
+- `subdir_range`: `rim_nas/001-050/001/rims_clean_sm_open_.nas`
+
+## Submit cases
+
+Validate case selection and the submit command first:
 
 ```bash
-python Codes/plot_all_rims_bins.py \
-  --input NumData/Cd_Accumulated_Combined.csv \
-  --rim-start 1 \
-  --rim-end 904 \
-  --output Figures/accumulated_cd.jpg
+python3 batch_run.py \
+  --rim-parent ./cases \
+  --indices "1 2" \
+  --batch-system slurm \
+  --submit-cmd "sbatch run.sh" \
+  --check
 ```
 
-Both plotting scripts provide command line help through `--help`. Paths given on the command line override their public placeholder defaults.
+Then run the same command without `--check`. Use `--dry-run` to list selected
+cases without launching anything, and `--concurrent N` to limit active cases.
+`batch_run.sh` is a compatibility wrapper with identical arguments. Slurm, LSF,
+and direct background processes are supported through `--batch-system`.
 
-## Reuse notes
+Stopping the monitor does not cancel jobs already submitted to a scheduler.
+Review the per-case `batch_Rim*.log` files and the final selected/submitted/
+missing/failed summary.
 
-The SLURM directives, module names, rendering options, and hardware allocations reflect the computing environment used for DrivAerRim. Adapt them to the local scheduler and software installation. Simcenter STAR-CCM+ and a valid license are required for the CFD stages. The Python analysis scripts operate directly on the released CSV summaries and do not require STAR-CCM+.
+## Configure STAR-CCM+ and Slurm
+
+Before submitting `run.sh` or `post.sh`:
+
+1. Replace the public `-` placeholders in the `#SBATCH` account and mail
+   directives, or remove directives that are not required by the target cluster.
+2. Export valid `LM_PROJECT` and `LM_LICENSE_FILE` values. The scripts preserve
+   values supplied by the environment.
+3. Set `STARCCM_MODULE` if the default module name is unavailable.
+4. Review CPU, node, GPU, memory, and wall-time requests for the target mesh and
+   cluster policy.
+5. Provide the compiled `repo/STARCFD` classes and required dependency JARs.
+
+The full pipeline is the default:
+
+```bash
+sbatch run.sh all
+```
+
+For recovery or staged execution, select `prep`, `surf`, `vol`, `run`, or
+`post`. `STARCFD_STAGE` can be used instead of a positional stage. By default,
+the main job submits `post.sh`; set `STARCFD_POST_MODE=cpu` for CPU fallback or
+`STARCFD_POST_MODE=none`/`RUN_POST=0` to skip it.
+
+## License and redistribution notes
+
+- These scripts are covered by the repository's
+  [CC BY-NC 4.0 license](../LICENSE.md), unless otherwise noted.
+- Do not publish STAR-CCM+ binaries, licensed templates, restricted JARs,
+  simulation files, NAS geometry, raw data, credentials, or cluster account
+  details unless redistribution is explicitly permitted.
+- Review example data for confidential geometry and metadata before release.
+- Run the local checks below from this `Codes` directory.
+
+```bash
+python3 -m compileall -q .
+bash -n prepare.sh batch_run.sh run.sh post.sh
+```
+
+Real STAR-CCM+ and scheduler execution must be verified on the target cluster;
+local syntax checks cannot validate licenses, modules, queues, or allocation
+requirements.

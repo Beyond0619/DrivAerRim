@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #SBATCH -J jobname
 #SBATCH -N 1 -n 1 -c 32
 #SBATCH --gpus-per-task=1
@@ -10,10 +10,10 @@
 
 # =============================================================================
 # Post-processing job for Tetralith GPU nodes (Tesla T4, 1 GPU/node).
-# Submit AFTER the main run_tetralith.sh has produced *_Finished.sim.
-#   sbatch post_tetralith_gpu.sh
+# Submit AFTER the main run.sh has produced *_Finished.sim.
+#   sbatch post.sh
 # Or chain from the main job:
-#   sbatch --dependency=afterok:${RUN_JOBID} post_tetralith_gpu.sh
+#   sbatch --dependency=afterok:${RUN_JOBID} post.sh
 #
 # Rationale: STAR-CCM+ picture export is single-threaded and entirely GPU-bound
 # (remote rasterizer). On Tetralith CPU nodes it falls back to mesa software
@@ -22,17 +22,21 @@
 # real GPU involved.
 # =============================================================================
 
-set -e
+set -euo pipefail
 
 CASE_DIR="${SLURM_SUBMIT_DIR:-$(pwd)}"
 cd "$CASE_DIR"
 
 mkdir -p log
 
-# STAR-CCM+ and license (same as run_tetralith.sh)
-module load star-ccm+/2506-mixed-precision
-export LM_PROJECT="-"
-export LM_LICENSE_FILE="-"
+# STAR-CCM+ and license (same settings as run.sh).
+STARCCM_MODULE="${STARCCM_MODULE:-star-ccm+/2506-mixed-precision}"
+module load "${STARCCM_MODULE}"
+export LM_PROJECT="${LM_PROJECT:--}"
+export LM_LICENSE_FILE="${LM_LICENSE_FILE:--}"
+if [[ "${LM_PROJECT}" == "-" || "${LM_LICENSE_FILE}" == "-" ]]; then
+  echo "WARNING: Replace the public LM_PROJECT/LM_LICENSE_FILE placeholders or export valid values before submission."
+fi
 
 # ImageMagick for outline + mesh pic size reduction (identify/convert).
 if ! command -v convert >/dev/null 2>&1; then
@@ -47,7 +51,7 @@ fi
 export PATH="${CASE_DIR}/repo/STARCFD/bin/tetralith_shims:${PATH}"
 
 # Python runtime used by Post.java (geometrical_properties / cdAx_clAx, etc.) on Tetralith.
-# Mirror the priority logic in run_tetralith.sh so Post subprocess Python calls see the same env.
+# Mirror the priority logic in run.sh so Post subprocess Python calls see the same env.
 # Priority:
 #   1) STARCFD_PYTHON exported by user/job script
 #   2) STARCFD_PY_ENV (if set and valid)
@@ -93,7 +97,7 @@ then
   echo "         Replace STARCFD_PY_ENV=- or set STARCFD_PYTHON=python3 with those packages installed."
 fi
 
-# Classpath: repo dist/ + third-party JARs in repo/STARCFD/lib/ (same as run_tetralith.sh).
+# Classpath: repo dist/ + third-party JARs in repo/STARCFD/lib/ (same as run.sh).
 STARCFD_REPO="${CASE_DIR}/repo/STARCFD"
 RUNCLASSpath="${STARCFD_REPO}/dist"
 if [[ ! -d "${STARCFD_REPO}/dist" ]]; then
@@ -105,7 +109,7 @@ if [[ -d "${STARCFD_REPO}/lib" ]]; then
     [[ -f "$j" ]] && RUNCLASSpath="${RUNCLASSpath}:${j}"
   done
 fi
-if [[ ! -d "${STARCFD_REPO}/lib" ]] || [[ -z "$(ls -1 "${STARCFD_REPO}/lib"/*.jar 2>/dev/null | head -n 1)" ]]; then
+if [[ ! -d "${STARCFD_REPO}/lib" ]] || ! compgen -G "${STARCFD_REPO}/lib/*.jar" >/dev/null; then
   echo "ERROR: Missing STARCFD macro dependency JARs in ${STARCFD_REPO}/lib/"
   echo "Required minimum: toml4j-0.7.2.jar, json-20211205.jar"
   echo "See repo/STARCFD/lib/README.txt for full jar list and how to copy from VCC."

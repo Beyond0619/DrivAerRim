@@ -16,20 +16,13 @@ import matplotlib.pyplot as plt
 import matplotlib.patheffects as pe
 import matplotlib.ticker as mticker
 
-os.environ["XDG_RUNTIME_DIR"] = "."
+os.environ.setdefault("XDG_RUNTIME_DIR", ".")
 
 # Paths
 SCRIPT_DIR = Path(__file__).resolve().parent
-IDDES_ROOT = SCRIPT_DIR.parents[2]          # /media/.../IDDES
-RAW_DATA_ROOT = IDDES_ROOT / "Raw_data"     # /media/.../IDDES/Raw_data
-if not RAW_DATA_ROOT.exists():
-    RAW_DATA_ROOT = IDDES_ROOT / "Raw_Data"
-RIM001_DIR = RAW_DATA_ROOT / "Rim001"
+DEFAULT_RAW_DATA_ROOT = Path("-")
 BASELINE_NAME = "CR"
 BASELINE_LABEL = "CR (Closed Rim)"
-BASELINE_DIR = RAW_DATA_ROOT / BASELINE_NAME
-SIDEPIC_PATH = RIM001_DIR / "Pictures/Dimensions/sidepic.png"
-VEHICLE_DIM_PATH = RIM001_DIR / "NumData/Vehicle_dimensions.csv"
 FIGURES_DIR = SCRIPT_DIR.parent / "Figures"
 OUT_FIG = FIGURES_DIR / "all_rims_bins_overlay.jpg"
 
@@ -486,6 +479,7 @@ def plot_min_max_with_cr(
     car_box_aspect,
     set_y_axis,
     y_lim,
+    sidepic_path,
 ):
     if not rim_data:
         return
@@ -544,7 +538,7 @@ def plot_min_max_with_cr(
     apply_tight_layout(fig)
 
     if sidepic_ok:
-        draw_background_car(ax, SIDEPIC_PATH, car_x_min, x_max, y_lim)
+        draw_background_car(ax, sidepic_path, car_x_min, x_max, y_lim)
         ax.set_xlim(x_min, x_max)
 
     fig.savefig(out_path, bbox_inches="tight")
@@ -572,6 +566,14 @@ def parse_args():
         help=(
             "Wide Cd_Accumulated_Combined.csv input. When omitted, the legacy "
             "raw Binned.csv workflow is used."
+        ),
+    )
+    parser.add_argument(
+        "--raw-data-root",
+        default=os.environ.get("RAW_DATA_ROOT", str(DEFAULT_RAW_DATA_ROOT)),
+        help=(
+            "Root containing Rim*/ and CR/ for the legacy Binned.csv workflow "
+            "(env: RAW_DATA_ROOT). The public default '-' must be replaced."
         ),
     )
     parser.add_argument(
@@ -822,9 +824,22 @@ def main():
         plot_combined_cd_input(Path(args.input), args)
         return
 
-    rims = discover_rims(RAW_DATA_ROOT)
+    if not args.raw_data_root or args.raw_data_root == "-":
+        raise SystemExit(
+            "--raw-data-root is required for the legacy Binned.csv workflow; "
+            "replace the public '-' placeholder."
+        )
+    raw_data_root = Path(args.raw_data_root).expanduser().resolve()
+    if not raw_data_root.is_dir():
+        raise SystemExit(f"Raw-data root not found: {raw_data_root}")
+    rim001_dir = raw_data_root / "Rim001"
+    baseline_dir = raw_data_root / BASELINE_NAME
+    sidepic_path = rim001_dir / "Pictures/Dimensions/sidepic.png"
+    vehicle_dim_path = rim001_dir / "NumData/Vehicle_dimensions.csv"
+
+    rims = discover_rims(raw_data_root)
     if not rims:
-        raise SystemExit(f"No Rim*/NumData/Binned.csv found under {RAW_DATA_ROOT}")
+        raise SystemExit(f"No Rim*/NumData/Binned.csv found under {raw_data_root}")
     selected_rims = {x.strip() for x in args.rims.split(",") if x.strip()}
     if selected_rims:
         rims = [(name, path) for name, path in rims if name in selected_rims]
@@ -851,7 +866,7 @@ def main():
         if not rims:
             raise SystemExit("No rims found in selected --rim-start/--rim-end range.")
 
-    baseline_binned = BASELINE_DIR / "NumData/Binned.csv"
+    baseline_binned = baseline_dir / "NumData/Binned.csv"
     if not baseline_binned.exists():
         raise SystemExit(f"No CR baseline found at {baseline_binned}")
 
@@ -861,7 +876,7 @@ def main():
     label_map = dict(PLOT_COLUMNS)
     selected_columns = [(m, label_map.get(m, m)) for m in metric_names]
 
-    default_area_front = read_area_front(VEHICLE_DIM_PATH)
+    default_area_front = read_area_front(vehicle_dim_path)
     rim_data = []
     for rim_name, binned_path in rims:
         try:
@@ -897,15 +912,15 @@ def main():
     rim_colors = coordinated_random_colors(len(rim_data))
     all_plot_data = rim_data + [(BASELINE_LABEL, baseline_data)]
 
-    x_min, x_max = read_vehicle_x_range(VEHICLE_DIM_PATH)
+    x_min, x_max = read_vehicle_x_range(vehicle_dim_path)
     plot_x_min = find_nearest_zero_x_before_front(
         rim_data + [(BASELINE_NAME, baseline_data)],
         x_min,
     )
-    sidepic_ok = SIDEPIC_PATH.exists() and x_min is not None and x_max is not None
+    sidepic_ok = sidepic_path.exists() and x_min is not None and x_max is not None
     car_box_aspect = None
     if sidepic_ok:
-        car_box_aspect = sidepic_ratio(SIDEPIC_PATH) * CAR_BOX_ASPECT_PAD
+        car_box_aspect = sidepic_ratio(sidepic_path) * CAR_BOX_ASPECT_PAD
 
     out_path = Path(args.output)
     out_path.parent.mkdir(parents=True, exist_ok=True)
@@ -966,7 +981,7 @@ def main():
         apply_tight_layout(fig)
 
         if sidepic_ok and y_lim is not None:
-            draw_background_car(ax, SIDEPIC_PATH, x_min, x_max, y_lim)
+            draw_background_car(ax, sidepic_path, x_min, x_max, y_lim)
             ax.set_xlim(plot_x_min, x_max)
 
         metric_base = OUTPUT_NAME_MAP.get(col_name, f"{col_name}_Accumulated")
@@ -998,6 +1013,7 @@ def main():
         car_box_aspect,
         set_cd_axis,
         CD_YLIM,
+        sidepic_path,
     )
 
     delta_cd_min_max_out = out_path.with_name(f"DeltaCd_AlongX_CR_Min_Max{suffix}")
@@ -1014,6 +1030,7 @@ def main():
         car_box_aspect,
         set_delta_cd_axis,
         DELTA_CD_YLIM,
+        sidepic_path,
     )
 
 

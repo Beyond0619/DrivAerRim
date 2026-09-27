@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #SBATCH -J jobname
 #SBATCH -N 32 -n 1024
 #SBATCH -A -
@@ -12,25 +12,64 @@
 # Requires: STAR-CCM+ module, repo/STARCFD built (dist/ or classpath), license.
 # =============================================================================
 
-set -e
+set -euo pipefail
+
+PIPELINE_STAGE="${1:-${STARCFD_STAGE:-all}}"
+if [[ "${PIPELINE_STAGE}" == "-h" || "${PIPELINE_STAGE}" == "--help" ]]; then
+  cat <<'EOF'
+Usage: sbatch run.sh [all|prep|surf|vol|run|post]
+
+The default stage is "all". STARCFD_STAGE can be used instead of a positional
+argument. Configure cluster-specific SBATCH, module, and license settings
+before submission.
+EOF
+  exit 0
+fi
+case "${PIPELINE_STAGE}" in
+  all|prep|surf|vol|run|solver|post) ;;
+  *)
+    echo "Unknown stage '${PIPELINE_STAGE}' (expected: all|prep|surf|vol|run|post)" >&2
+    exit 2
+    ;;
+esac
 
 CASE_DIR="${SLURM_SUBMIT_DIR:-$(pwd)}"
 cd "$CASE_DIR"
 
-# Node list for parallel stages (Vol, Run, Post)
-NODEFILE="${CASE_DIR}/hostlist.${SLURM_JOB_ID}"
-if command -v hostlist &>/dev/null; then
-  hostlist -e "$SLURM_JOB_NODELIST" > "$NODEFILE"
-else
-  scontrol show hostnames "$SLURM_JOB_NODELIST" > "$NODEFILE"
-fi
+NODEFILE=""
+cleanup_nodefile() {
+  if [[ -n "${NODEFILE}" ]]; then
+    rm -f -- "${NODEFILE}"
+  fi
+}
+trap cleanup_nodefile EXIT
+
+prepare_nodefile() {
+  if [[ -n "${NODEFILE}" && -f "${NODEFILE}" ]]; then
+    return
+  fi
+  if [[ -z "${SLURM_JOB_ID:-}" || -z "${SLURM_JOB_NODELIST:-}" || -z "${SLURM_NTASKS:-}" ]]; then
+    echo "ERROR: Vol/Run stages require a Slurm allocation." >&2
+    exit 1
+  fi
+  NODEFILE="${CASE_DIR}/hostlist.${SLURM_JOB_ID}"
+  if command -v hostlist &>/dev/null; then
+    hostlist -e "${SLURM_JOB_NODELIST}" > "${NODEFILE}"
+  else
+    scontrol show hostnames "${SLURM_JOB_NODELIST}" > "${NODEFILE}"
+  fi
+}
 
 mkdir -p log
 
-# STAR-CCM+ and license (adjust module/version to what is available on Tetralith)
-module load star-ccm+/2506-mixed-precision
-export LM_PROJECT="-"
-export LM_LICENSE_FILE="-"
+# STAR-CCM+ and license (adjust for the target cluster).
+STARCCM_MODULE="${STARCCM_MODULE:-star-ccm+/2506-mixed-precision}"
+module load "${STARCCM_MODULE}"
+export LM_PROJECT="${LM_PROJECT:--}"
+export LM_LICENSE_FILE="${LM_LICENSE_FILE:--}"
+if [[ "${LM_PROJECT}" == "-" || "${LM_LICENSE_FILE}" == "-" ]]; then
+  echo "WARNING: Replace the public LM_PROJECT/LM_LICENSE_FILE placeholders or export valid values before submission."
+fi
 
 # ImageMagick is needed by Post/Analyze for outline + size reduction (identify/convert).
 # Tetralith ships it as a module; no-op if already available.
@@ -104,7 +143,7 @@ if [[ -d "${STARCFD_REPO}/lib" ]]; then
     [[ -f "$j" ]] && RUNCLASSpath="${RUNCLASSpath}:${j}"
   done
 fi
-if [[ ! -d "${STARCFD_REPO}/lib" ]] || [[ -z "$(ls -1 "${STARCFD_REPO}/lib"/*.jar 2>/dev/null | head -n 1)" ]]; then
+if [[ ! -d "${STARCFD_REPO}/lib" ]] || ! compgen -G "${STARCFD_REPO}/lib/*.jar" >/dev/null; then
   echo "ERROR: Missing STARCFD macro dependency JARs in ${STARCFD_REPO}/lib/"
   echo "Required minimum:"
   echo "  - toml4j-0.7.2.jar"
@@ -159,6 +198,7 @@ run_vol() {
     echo "ERROR: No *_surf.sim found. Check log/surf.log."
     exit 1
   fi
+  prepare_nodefile
   echo "========== VOL (using $surf_sim) =========="
   starccm+ -collab -power -mpi intel -mpiflags "-bootstrap slurm" -rsh jobsh -batch "${STARCFD_REPO}/src/aero/Vol.java" \
     -classpath "${RUNCLASSpath}" \
@@ -174,6 +214,7 @@ run_solver() {
     echo "ERROR: No *_vol.sim found. Check log/vol.log."
     exit 1
   fi
+  prepare_nodefile
   echo "========== RUN (using $vol_sim) =========="
   starccm+ -collab -power -mpi intel -mpiflags "-bootstrap slurm" -rsh jobsh -batch "${STARCFD_REPO}/src/aero/Run.java" \
     -classpath "${RUNCLASSpath}" \
@@ -204,7 +245,7 @@ submit_post_gpu() {
   # Submit a separate GPU sbatch for picture export. This is the recommended
   # path on Tetralith (Tesla T4, --gpus-per-task=1) and mirrors how VCC runs
   # Post on a dedicated remote renderer (cs7-xxxx with EGL).
-  local post_script="${CASE_DIR}/post_tetralith_gpu.sh"
+  local post_script="${CASE_DIR}/post.sh"
   if [[ ! -f "$post_script" ]]; then
     echo "WARNING: $post_script not found. Cannot chain GPU Post job."
     return 1
@@ -219,27 +260,23 @@ submit_post_gpu() {
   echo "GPU Post job submitted: ${post_jobid}"
 }
 
-# Run full pipeline (comment out stages if resuming from a specific step)
-#run_prep
-#run_surf
-#run_vol
-run_solver
-
 # Simple post toggle (more intuitive than STARCFD_POST_MODE).
 # - RUN_POST=1 (default): run/submit post according to STARCFD_POST_MODE (gpu|cpu|none)
 # - RUN_POST=0          : skip Post entirely
 RUN_POST="${RUN_POST:-1}"
 
 # Post-processing:
-#   - STARCFD_POST_MODE=gpu  (default) -> submit post_tetralith_gpu.sh as a
+#   - STARCFD_POST_MODE=gpu  (default) -> submit post.sh as a
 #     separate 1-node GPU job (with --dependency=afterok on this job), much
 #     faster for picture export (EGL / vglrun on Tesla T4).
 #   - STARCFD_POST_MODE=cpu  -> run Post inside this CPU job via software
 #     rendering. Slow but needs no GPU allocation.
 #   - STARCFD_POST_MODE=none -> skip Post here (submit manually later).
-if [[ "${RUN_POST}" == "0" ]]; then
-  echo "Skipping Post (RUN_POST=0)."
-else
+run_configured_post() {
+  if [[ "${RUN_POST}" == "0" ]]; then
+    echo "Skipping Post (RUN_POST=0)."
+    return
+  fi
   case "${STARCFD_POST_MODE:-gpu}" in
     gpu)
       submit_post_gpu
@@ -248,14 +285,27 @@ else
       run_post_cpu_fallback
       ;;
     none)
-      echo "Skipping Post (STARCFD_POST_MODE=none). Submit post_tetralith_gpu.sh manually when ready."
+      echo "Skipping Post (STARCFD_POST_MODE=none). Submit post.sh manually when ready."
       ;;
     *)
       echo "Unknown STARCFD_POST_MODE='${STARCFD_POST_MODE}' (expected: gpu|cpu|none)" >&2
       exit 2
       ;;
   esac
-fi
+}
 
-rm -f "$NODEFILE"
+case "${PIPELINE_STAGE}" in
+  all)
+    run_prep
+    run_surf
+    run_vol
+    run_solver
+    run_configured_post
+    ;;
+  prep) run_prep ;;
+  surf) run_surf ;;
+  vol) run_vol ;;
+  run|solver) run_solver ;;
+  post) run_configured_post ;;
+esac
 echo "Done. Logs in log/prep.log, log/surf.log, log/vol.log, log/run.log, log/post.log"

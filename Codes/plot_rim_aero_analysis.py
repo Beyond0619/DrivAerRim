@@ -4,7 +4,7 @@ import os
 from pathlib import Path
 import sys
 
-VENV_PYTHON = Path("-")
+VENV_PYTHON = Path(os.environ.get("PLOT_PYTHON", "-"))
 VENV_DIR = VENV_PYTHON.parent.parent
 NEEDED_MODULES = ("pandas", "matplotlib", "seaborn")
 if (
@@ -29,8 +29,8 @@ Quick switches (edit here if you want):
 If you pass --input / --output-dir on CLI, they override these.
 """
 
-# Default input locations. Replace "-" with a local path or pass --input.
-FORCES_DIR = Path("-")
+# Default input locations. Set FORCES_DIR or pass --input.
+FORCES_DIR = Path(os.environ.get("FORCES_DIR", "-"))
 DEFAULT_INPUT_DIRS = [
     FORCES_DIR / "Data",
     FORCES_DIR,
@@ -499,6 +499,11 @@ def parse_args() -> argparse.Namespace:
 
 def resolve_default_input_csv() -> Path:
     """Find the newest all_means_*.csv file in the default locations."""
+
+    if FORCES_DIR == Path("-"):
+        raise FileNotFoundError(
+            "No default input directory is configured. Pass --input or set FORCES_DIR."
+        )
 
     for input_dir in DEFAULT_INPUT_DIRS:
         matches = sorted(
@@ -1401,13 +1406,15 @@ def plot_delta_cd_cl_pairplot(df: pd.DataFrame, output_dir: Path, dpi: int) -> N
 def main() -> None:
     args = parse_args()
     if args.input:
-        input_path = Path(args.input)
+        input_path = Path(args.input).expanduser()
     else:
         input_path = resolve_default_input_csv()
     script_dir = Path(__file__).resolve().parent
 
     if args.output_dir:
-        output_dir = Path(args.output_dir)
+        output_dir = Path(args.output_dir).expanduser()
+    elif FORCES_DIR == Path("-"):
+        output_dir = input_path.parent / "Figures"
     else:
         output_dir = DEFAULT_OUTPUT_DIR
     output_dir.mkdir(parents=True, exist_ok=True)
