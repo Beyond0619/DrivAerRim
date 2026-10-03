@@ -70,6 +70,50 @@ The dataset covers the complete set of 904 DeepWheel designs rather than a small
 | `RimXXXX/Surfaces/` | Complete vehicle and component surface pressure and wall shear stress |
 | `RimXXXX/Volumes/` | Six types of fluid volume: front and rear wheel MRF regions, local wheel volumes, the wake, and the region surrounding the complete vehicle |
 
+### Data repository structure
+
+The Hugging Face data repository uses the following file patterns:
+
+```text
+DrivAerRim/
+├── NumData/
+│   ├── Force_Coefficients_Combined.csv
+│   └── Cd_Accumulated_Combined.csv
+├── Geometry/
+│   ├── Car_Body/Car_Body.stl
+│   ├── Wheel_FL/Wheel_FL_XXXX.stl
+│   ├── Wheel_RL/Wheel_RL_XXXX.stl
+│   ├── WheelHouse_FL/WheelHouse_FL.stl
+│   ├── WheelHouse_RL/WheelHouse_RL.stl
+│   ├── WheelSupport_FL/WheelSupport_FL.stl
+│   └── WheelSupport_RL/WheelSupport_RL.stl
+└── RimXXXX/
+    ├── Surfaces/
+    │   ├── FullCar/FullCar_XXXX.vtp
+    │   ├── Wheel_FL/Wheel_FL_XXXX.vtp
+    │   ├── Wheel_RL/Wheel_RL_XXXX.vtp
+    │   ├── WheelHouse_FL/WheelHouse_FL_XXXX.vtp
+    │   ├── WheelHouse_RL/WheelHouse_RL_XXXX.vtp
+    │   ├── WheelSupport_FL/WheelSupport_FL_XXXX.vtp
+    │   └── WheelSupport_RL/WheelSupport_RL_XXXX.vtp
+    ├── Slices/
+    │   ├── X/X_<position>/X_<position>_XXXX.vtp
+    │   ├── Y/Y_<position>/Y_<position>_XXXX.vtp
+    │   └── Z/Z_<position>/Z_<position>_XXXX.vtp
+    ├── Volumes/
+    │   ├── Wheel_FL_region/Wheel_FL_region_XXXX.vtu
+    │   ├── Wheel_FL_volume/Wheel_FL_volume_XXXX.vtu
+    │   ├── Wheel_RL_region/Wheel_RL_region_XXXX.vtu
+    │   ├── Wheel_RL_volume/Wheel_RL_volume_XXXX.vtu
+    │   ├── Wake_volume/Wake_volume_XXXX.vtu
+    │   └── FullCar_volume/FullCar_volume_XXXX.vtu
+    └── Pictures/
+        ├── <preview_name>.webp
+        └── Cd_steady_history.png
+```
+
+`<position>` denotes the slice coordinate in millimetres, and `<preview_name>` denotes the descriptive name of a preview image.
+
 `XXXX` is a zero-padded case number from `0001` to `0904`. The suffixes `FL` and `RL` denote front left and rear left. The right side component geometries are mirrored counterparts of those on the left. With geometrically symmetric configurations and zero yaw, the released component geometries and local spatial records focus on the front left and rear left regions. The complete vehicle surface, wake volume, and full vehicle volume include both sides.
 
 Every case provides **128 slice files, 7 surface files, and 6 volume files**, together with at least 32 WebP previews and `Pictures/Cd_steady_history.png`. The volume records total 5,424 files, including 904 `FullCar_volume` files.
