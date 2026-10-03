@@ -35,7 +35,7 @@ The release supports two complementary uses:
 | Item | Description |
 |---|---|
 | Cases | 904, named `Rim0001` to `Rim0904` |
-| Total file size | Approximately 3.61 TB |
+| Total file size | Approximately 9.32 TB (decimal) |
 | Vehicle | Full scale DrivAer estateback, closed cooling, smooth underbody |
 | Tyres | Deformed Rain pattern with longitudinal grooves and ground contact patches |
 | CFD method | Three-dimensional steady incompressible RANS |
@@ -57,7 +57,7 @@ The dataset covers the complete set of 904 DeepWheel designs rather than a small
 
 1. **Rim preprocessing:** the STL meshes are repaired, scaled, and assembled with the DrivAer wheels.
 2. **Automated batch CFD:** case preparation, meshing, solution, monitoring, and postprocessing are executed through an automated high performance computing workflow.
-3. **Exported data:** each completed case provides numerical summaries, geometry, surface fields, prescribed slices, local wheel volumes, a wake volume, preview images, and convergence histories.
+3. **Exported data:** each completed case provides numerical summaries, geometry, surface fields, prescribed slices, local wheel volumes, a wake volume, a volume surrounding the complete vehicle, preview images, and convergence histories.
 
 ## Dataset contents
 
@@ -68,17 +68,24 @@ The dataset covers the complete set of 904 DeepWheel designs rather than a small
 | `RimXXXX/Pictures/` | Field previews and complete vehicle drag convergence history |
 | `RimXXXX/Slices/` | Velocity, pressure, and total turbulent kinetic energy on 128 prescribed planes |
 | `RimXXXX/Surfaces/` | Complete vehicle and component surface pressure and wall shear stress |
-| `RimXXXX/Volumes/` | Front and rear wheel regions, wheel volumes, and a vehicle wake volume |
+| `RimXXXX/Volumes/` | Six types of fluid volume: front and rear wheel MRF regions, local wheel volumes, the wake, and the region surrounding the complete vehicle |
 
 `XXXX` is a zero-padded case number from `0001` to `0904`. The suffixes `FL` and `RL` denote front left and rear left. The right side installations are mirrored counterparts, so the released component geometries and local spatial records focus on the left side wheel regions.
 
-Each case contains 128 slice files, 7 surface files, 5 volume files, 32 WebP previews, and one complete vehicle drag history.
+The standard per-case output comprises 128 slice files, 7 surface files, 6 volume files, 32 WebP previews, and one complete vehicle drag history.
 
 ### Spatial outputs
 
-<img src="assets/spatial_outputs.jpg" alt="Prescribed slices, wheel volumes, and wake volume exported for each case" width="100%">
+<img src="assets/spatial_outputs_fullcar.png" alt="Prescribed slices, wheel MRF regions, local wheel volumes, wake volume, and full vehicle volume exported for each case" width="100%">
 
-Surface records contain mean pressure and mean wall shear stress. Slice and volume records contain velocity, pressure, and total turbulent kinetic energy. The wake volume complements the wheel-centred records for studying downstream changes caused by rim geometry.
+Surface records contain mean pressure and mean wall shear stress. Slice and volume records contain velocity, pressure, and total turbulent kinetic energy. The wake volume captures downstream changes caused by rim geometry. The additional `FullCar_volume` covers the fluid region surrounding the complete vehicle and complements the local wheel and wake records.
+
+| Volume | x range (m) | y range (m) | z range (m) |
+|---|---|---|---|
+| `FullCar_volume` | -1.5 to 6.5 | -1.5 to 1.5 | -0.3 to 1.5 |
+| `Wake_volume` | 3.2 to 5.7 | -1.25 to 1.25 | -0.3 to 1.25 |
+
+Each case includes `RimXXXX/Volumes/FullCar_volume/FullCar_volume_XXXX.vtu`, approximately 5.9 GiB (6.3 GB), with the same `MeanVelocity`, `MeanPressure`, and `MeanTotalTKE` fields as the other volume records.
 
 ### Aerodynamic overview
 
@@ -125,7 +132,7 @@ The [`Codes/`](Codes/) directory contains the released workflow and analysis scr
 
 ## Download
 
-The complete data release contains approximately **3.61 TB of files**, so targeted downloads are recommended. The Hugging Face command line client can retrieve selected directories without cloning the complete repository.
+The complete data release contains approximately **9.32 TB of files** (decimal), so targeted downloads are recommended. The Hugging Face command line client can retrieve selected directories without cloning the complete repository.
 
 ```bash
 pip install -U huggingface_hub

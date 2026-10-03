@@ -41,8 +41,8 @@ abstract: >-
   moving reference frame regions and tyre rotation using rotating wall
   boundary conditions. The release contains geometry, integrated aerodynamic
   coefficients, accumulated drag, surface pressure and wall shear stress,
-  prescribed slices, local wheel volumes, a wake volume, preview images, and
-  convergence histories.
+  prescribed slices, local wheel volumes, a wake volume, a volume surrounding
+  the complete vehicle, preview images, and convergence histories.
 keywords:
   - computational fluid dynamics
   - automotive aerodynamics
