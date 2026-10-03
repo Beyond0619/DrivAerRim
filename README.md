@@ -35,7 +35,7 @@ The release supports two complementary uses:
 | Item | Description |
 |---|---|
 | Cases | 904, named `Rim0001` to `Rim0904` |
-| Total file size | Approximately 9.32 TB (decimal) |
+| Total file size | Approximately 9.32 TB (8.48 TiB) |
 | Vehicle | Full scale DrivAer estateback, closed cooling, smooth underbody |
 | Tyres | Deformed Rain pattern with longitudinal grooves and ground contact patches |
 | CFD method | Three-dimensional steady incompressible RANS |
@@ -70,22 +70,38 @@ The dataset covers the complete set of 904 DeepWheel designs rather than a small
 | `RimXXXX/Surfaces/` | Complete vehicle and component surface pressure and wall shear stress |
 | `RimXXXX/Volumes/` | Six types of fluid volume: front and rear wheel MRF regions, local wheel volumes, the wake, and the region surrounding the complete vehicle |
 
-`XXXX` is a zero-padded case number from `0001` to `0904`. The suffixes `FL` and `RL` denote front left and rear left. The right side installations are mirrored counterparts, so the released component geometries and local spatial records focus on the left side wheel regions.
+`XXXX` is a zero-padded case number from `0001` to `0904`. The suffixes `FL` and `RL` denote front left and rear left. The right side component geometries are mirrored counterparts of those on the left. With geometrically symmetric configurations and zero yaw, the released component geometries and local spatial records focus on the front left and rear left regions. The complete vehicle surface, wake volume, and full vehicle volume include both sides.
 
-The standard per-case output comprises 128 slice files, 7 surface files, 6 volume files, 32 WebP previews, and one complete vehicle drag history.
+Every case provides **128 slice files, 7 surface files, and 6 volume files**, together with at least 32 WebP previews and `Pictures/Cd_steady_history.png`. The volume records total 5,424 files, including 904 `FullCar_volume` files.
+
+`Geometry/` contains 904 wheel assembly STL files for each of the front left and rear left positions, for example `Geometry/Wheel_FL/Wheel_FL_0001.stl`. The common body is stored at `Geometry/Car_Body/Car_Body.stl`. The two wheelhouses and two wheel supports are also shared across cases and each stored once. These STL geometries are separate from the exported CFD surface meshes.
+
+`NumData/Force_Coefficients_Combined.csv` contains one row per case, with the integer `Rim` identifier mapping to `RimXXXX`, for example `1` to `Rim0001`. `NumData/Cd_Accumulated_Combined.csv` contains the streamwise coordinate `X` in metres and one accumulated drag coefficient column for each case, from `Rim0001` to `Rim0904`.
 
 ### Spatial outputs
 
 <img src="assets/spatial_outputs_fullcar.png" alt="Prescribed slices, wheel MRF regions, local wheel volumes, wake volume, and full vehicle volume exported for each case" width="100%">
 
-Surface records contain mean pressure and mean wall shear stress. Slice and volume records contain velocity, pressure, and total turbulent kinetic energy. The wake volume captures downstream changes caused by rim geometry. The additional `FullCar_volume` covers the fluid region surrounding the complete vehicle and complements the local wheel and wake records.
+Surface and slice files use VTK PolyData (`.vtp`), and volume files use VTK Unstructured Grid (`.vtu`). The 128 slices comprise 80 planes normal to x, 30 normal to y, and 18 normal to z. Slice directory and file names give the plane position in millimetres, for example `Rim0001/Slices/X/X_-100/X_-100_0001.vtp`.
+
+| Records | Field | Quantity | Units |
+|---|---|---|---|
+| Surfaces | `MeanPressure` | Static pressure | Pa |
+| Surfaces | `MeanWSS` | Wall shear stress vector | Pa |
+| Slices and Volumes | `MeanVelocity` | Velocity vector | m/s |
+| Slices and Volumes | `MeanPressure` | Static pressure | Pa |
+| Slices and Volumes | `MeanTotalTKE` | Total turbulent kinetic energy | m²/s² |
+
+The `Mean` prefix denotes averaging over the final 500 steady solver iterations, not a physical time average of an unsteady simulation.
+
+The six volume records comprise the front left and rear left MRF regions (`Wheel_FL_region`, `Wheel_RL_region`), larger local wheel regions (`Wheel_FL_volume`, `Wheel_RL_volume`), the vehicle wake (`Wake_volume`), and the fluid region surrounding the complete vehicle (`FullCar_volume`).
 
 | Volume | x range (m) | y range (m) | z range (m) |
 |---|---|---|---|
 | `FullCar_volume` | -1.5 to 6.5 | -1.5 to 1.5 | -0.3 to 1.5 |
 | `Wake_volume` | 3.2 to 5.7 | -1.25 to 1.25 | -0.3 to 1.25 |
 
-Each case includes `RimXXXX/Volumes/FullCar_volume/FullCar_volume_XXXX.vtu`, approximately 5.9 GiB (6.3 GB), with the same `MeanVelocity`, `MeanPressure`, and `MeanTotalTKE` fields as the other volume records.
+Each case includes `RimXXXX/Volumes/FullCar_volume/FullCar_volume_XXXX.vtu`, averaging approximately **5.9 GiB (6.3 GB)** per file, with the same three flow fields as the other volume records. Unlike `Surfaces/FullCar`, which describes the vehicle surface, `Volumes/FullCar_volume` contains the surrounding fluid mesh and flow fields.
 
 ### Aerodynamic overview
 
@@ -132,7 +148,7 @@ The [`Codes/`](Codes/) directory contains the released workflow and analysis scr
 
 ## Download
 
-The complete data release contains approximately **9.32 TB of files** (decimal), so targeted downloads are recommended. The Hugging Face command line client can retrieve selected directories without cloning the complete repository.
+The complete data release contains approximately **9.32 TB of files (8.48 TiB)**, so targeted downloads are recommended. The Hugging Face command line client can retrieve selected directories without cloning the complete repository.
 
 ```bash
 pip install -U huggingface_hub
@@ -147,7 +163,7 @@ hf download BeyondXia1212/DrivAerRim \
   --local-dir DrivAerRim
 ```
 
-Download one complete case:
+Download spatial fields and pictures for one case. The shared and case-specific STL files are stored separately under `Geometry/`:
 
 ```bash
 hf download BeyondXia1212/DrivAerRim \
@@ -156,7 +172,16 @@ hf download BeyondXia1212/DrivAerRim \
   --local-dir DrivAerRim
 ```
 
-Equivalent Python example:
+Download only the full vehicle volume for one case:
+
+```bash
+hf download BeyondXia1212/DrivAerRim \
+  Rim0001/Volumes/FullCar_volume/FullCar_volume_0001.vtu \
+  --repo-type dataset \
+  --local-dir DrivAerRim
+```
+
+Python example for the numerical summaries and one case's spatial fields and pictures:
 
 ```python
 from huggingface_hub import snapshot_download
@@ -189,7 +214,7 @@ Please also cite the source rim collection:
 
 > Yoo, S. & Kang, N. DeepWheel: Generating a 3D Synthetic Wheel Dataset for Design and Performance Evaluation. *Journal of Mechanical Design* **148**, 051702 (2026). [https://doi.org/10.1115/1.4069899](https://doi.org/10.1115/1.4069899)
 
-The machine-readable metadata are provided in [`CITATION.cff`](CITATION.cff). Please replace the dataset citation with the peer-reviewed DrivAerRim article after its DOI becomes available.
+The machine-readable metadata are provided in [`CITATION.cff`](CITATION.cff). Please also cite the accompanying DrivAerRim article once its formal publication identifier becomes available, while retaining the dataset and source geometry citations.
 
 ## License and provenance
 

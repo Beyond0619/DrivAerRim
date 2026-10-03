@@ -1,8 +1,8 @@
 cff-version: 1.2.0
 message: >-
   If you use DrivAerRim, please cite the dataset and the source DeepWheel
-  collection. Replace this citation with the peer-reviewed DrivAerRim article
-  when its DOI becomes available.
+  collection. Also cite the accompanying DrivAerRim article when its formal
+  publication identifier becomes available.
 title: >-
   DrivAerRim: A full vehicle dataset with rotating wheels for data-driven
   aerodynamic design of wheel rims
