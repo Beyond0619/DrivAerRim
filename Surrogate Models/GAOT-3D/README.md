@@ -1,6 +1,8 @@
 # GAOT-3D
 
-The GAOT-3D implementation used for the DrivAerRim surrogate-model example
-will be added to this directory. The fixed training, validation and test case
-lists are available in the adjacent [`Dataset_Splits`](../Dataset_Splits/)
-directory.
+This directory contains the fixed training, validation and test case lists used
+for the DrivAerRim surrogate-model experiments. See
+[`Dataset_Splits`](Dataset_Splits/) for the six nested training sets and the
+shared validation and test sets.
+
+The corresponding GAOT-3D implementation will be added alongside these files.
