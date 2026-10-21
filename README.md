@@ -10,6 +10,7 @@
 [Dataset](https://huggingface.co/datasets/BeyondXia1212/DrivAerRim) ·
 [Files](https://huggingface.co/datasets/BeyondXia1212/DrivAerRim/tree/main) ·
 [Scripts](Codes/) ·
+[Surrogate models](#surrogate-models) ·
 [Citation](#citation) ·
 [Contact](#contact)
 
@@ -189,6 +190,14 @@ The [`Codes/`](Codes/) directory contains the released workflow and analysis scr
 | [`plot_rim_aero_analysis.py`](Codes/plot_rim_aero_analysis.py) | Analyses complete vehicle and wheel component aerodynamic coefficients across all cases |
 
 `prepare.sh` and `batch_run.sh` are compatibility wrappers for the Python tools. The SLURM scripts use public placeholders for cluster account, email, licence, and path settings. The released `run.sh` requests 2,880 tasks, matching the per-case CPU core count reported for dataset production. See the [code documentation](Codes/README.md) for configuration and examples.
+
+## Surrogate models
+
+The [`Surrogate Models/Dataset_Splits/`](Surrogate%20Models/Dataset_Splits/)
+directory provides the fixed case IDs used for the six GAOT-3D training-set
+sizes, together with the shared validation and test sets. The
+[`Surrogate Models/GAOT-3D/`](Surrogate%20Models/GAOT-3D/) directory is reserved
+for the corresponding model implementation.
 
 ## Download
 
