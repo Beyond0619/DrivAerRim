@@ -1,0 +1,106 @@
+{
+    "setup": {
+        "seed": 42,
+        "device": "cuda",
+        "dtype": "torch.float32",
+        "trainer_name": "static3d",
+        "train": true,
+        "test": true,
+        "ckpt": false,
+        "use_variance_test": false,
+        "distributed": false
+    },
+    "model": {
+        "name": "gaot_3d",
+        "use_conditional_norm": false,
+        "args": {
+            "latent_tokens": [
+                64,
+                32,
+                32
+            ],
+            "magno": {
+                "use_gno": true,
+                "gno_coord_dim": 3,
+                "neighbor_strategy": "bidirectional",
+                "projection_channels": 256,
+                "in_gno_channel_mlp_hidden_layers": [
+                    64,
+                    64,
+                    64
+                ],
+                "out_gno_channel_mlp_hidden_layers": [
+                    64,
+                    64
+                ],
+                "lifting_channels": 32,
+                "gno_radius": 0.066,
+                "gno_use_torch_cluster": true,
+                "attention_type": "cosine",
+                "use_geoembed": true,
+                "embedding_method": "statistical",
+                "encoder_feature_attr": "pos",
+                "precompute_edges": true,
+                "sampling_strategy": "ratio",
+                "sample_ratio": 0.7
+            },
+            "transformer": {
+                "patch_size": 2,
+                "hidden_size": 256,
+                "use_attn_norm": true,
+                "use_ffn_norm": true,
+                "norm_eps": 1e-06,
+                "num_layers": 5,
+                "positional_embedding": "rope",
+                "use_long_range_skip": true,
+                "attn_config": {
+                    "hidden_size": 256,
+                    "num_heads": 8,
+                    "num_kv_heads": 8,
+                    "use_conditional_norm": false,
+                    "cond_norm_hidden_size": 4,
+                    "atten_dropout": 0.2
+                },
+                "ffn_config": {
+                    "hidden_size": 1024,
+                    "use_conditional_norm": false,
+                    "cond_norm_hidden_size": 4
+                }
+            }
+        }
+    },
+    "dataset": {
+        "name": "rim_pressure",
+        "metaname": "incompressible_fluids/rim_pressure",
+        "base_path": ".../wheel_pressure_900",
+        "processed_folder": "processed",
+        "split_dir": "splits",
+        "split_name": "case_02_train_576",
+        "batch_size": 1,
+        "num_workers": 4,
+        "shuffle": true,
+        "metric_suite": "general",
+        "use_rescale_new": true,
+        "update_pt_files_with_edges": false
+    },
+    "optimizer": {
+        "name": "adamw",
+        "args": {
+            "lr": 0.001,
+            "weight_decay": 1e-05,
+            "epoch": 200,
+            "loss_scale": 1.0,
+            "eval_every_eps": 1,
+            "scheduler": "mix",
+            "max_lr": 0.001,
+            "min_lr": 0.0001,
+            "final_lr": 1e-05
+        }
+    },
+    "path": {
+        "ckpt_path": ".ckpt/rim/pressure_xxx.pt",
+        "loss_path": ".loss/rim/pressure_xxx.png",
+        "result_path": ".results/rim/pressure_xxx.png",
+        "database_path": ".database/rim/pressure_scale_new.csv"
+    }
+}

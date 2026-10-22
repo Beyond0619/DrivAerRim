@@ -1,0 +1,112 @@
+{
+    "setup": {
+        "seed": 42,
+        "device": "cuda:0",
+        "dtype": "torch.float32",
+        "trainer_name": "static3d",
+        "train": true,
+        "test": true,
+        "ckpt": false,
+        "use_variance_test": false,
+        "distributed": false
+    },
+    "model": {
+        "name": "gaot_3d",
+        "use_conditional_norm": false,
+        "args": {
+            "latent_tokens": [64, 32, 32],
+            "magno": {
+                "use_gno": true,
+                "gno_coord_dim": 3,
+                "neighbor_strategy": ["bidirectional", "bidirectional"],
+                "k_neighbors": 1,
+                "mlp_type": "linear",
+                "projection_channels": 128,
+                "in_gno_channel_mlp_hidden_layers": [32, 32],
+                "out_gno_channel_mlp_hidden_layers": [32, 32],
+                "lifting_channels": 32,
+                "gno_radius": 0.066,
+                "gno_use_torch_cluster": true,
+                "gno_use_torch_scatter": true,
+                "use_attn": true,
+                "attention_type": "cosine",
+                "use_geoembed": true,
+                "embedding_method": "statistical",
+                "pooling": "max",
+                "encoder_feature_attr": "pos",
+                "precompute_edges": true,
+                "asynchronous_graph_building": false,
+                "sampling_strategy": "ratio",
+                "sample_ratio": 0.7,
+                "use_scale_weights": false,
+                "use_graph_cache": true,
+                "scales": [1.0]
+            },
+            "transformer": {
+                "patch_size": 2,
+                "hidden_size": 256,
+                "use_attn_norm": true,
+                "use_ffn_norm": true,
+                "norm_eps": 1e-06,
+                "num_layers": 5,
+                "positional_embedding": "rope",
+                "use_long_range_skip": true,
+                "attn_config": {
+                    "hidden_size": 256,
+                    "num_heads": 8,
+                    "num_kv_heads": 8,
+                    "use_conditional_norm": false,
+                    "cond_norm_hidden_size": 4,
+                    "atten_dropout": 0.0
+                },
+                "ffn_config": {
+                    "hidden_size": 1024,
+                    "use_conditional_norm": false,
+                    "cond_norm_hidden_size": 4
+                }
+            }
+        }
+    },
+    "dataset": {
+        "name": "wheel_wss",
+        "metaname": "incompressible_fluids/rim_shearstress",
+        "base_path": ".../wheel_wss_900",
+        "processed_folder": "processed",
+        "split_dir": "splits",
+        "split_name": "case_05_train_072",
+        "active_variables": [0, 1, 2],
+        "force_recompute_stats": false,
+        "use_metadata_stats": true,
+        "use_rescale_new": true,
+        "sample_rate": 1.0,
+        "rand_dataset": false,
+        "batch_size": 1,
+        "num_workers": 4,
+        "shuffle": true,
+        "metric_suite": "general",
+        "update_pt_files_with_edges": false,
+        "training_strategy": "full_grid",
+        "neural_field_input_nodes": 40000,
+        "neural_field_query_nodes_train": 40000
+    },
+    "optimizer": {
+        "name": "adamw",
+        "args": {
+            "lr": 1e-03,
+            "weight_decay": 1e-05,
+            "epoch": 200,
+            "loss_scale": 1.0,
+            "eval_every_eps": 2,
+            "scheduler": "mix",
+            "max_lr": 1e-03,
+            "min_lr": 1e-04,
+            "final_lr": 1e-05
+        }
+    },
+    "path": {
+        "ckpt_path": ".ckpt/rim/model_wss_xxx.pt",
+        "loss_path": ".loss/rim/loss_wss_xxx.png",
+        "result_path": ".results/rim/result_wss_xxx.png",
+        "database_path": ".database/rim/metrics_wss.csv"
+    }
+}
