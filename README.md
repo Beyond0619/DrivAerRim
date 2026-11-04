@@ -2,7 +2,7 @@
 
 # DrivAerRim
 
-### A computational fluid dynamics dataset for data-driven analysis of wheel rim aerodynamics
+### A full-vehicle CFD dataset for wheel rim aerodynamics
 
 [![Dataset](https://img.shields.io/badge/Dataset-Hugging%20Face-FFD21E?logo=huggingface&logoColor=000)](https://huggingface.co/datasets/BeyondXia1212/DrivAerRim)
 [![License](https://img.shields.io/badge/License-CC%20BY--NC%204.0-2A7F62)](LICENSE.md)
@@ -256,7 +256,7 @@ The accompanying manuscript is in preparation. Until a formal publication identi
 ```bibtex
 @dataset{xia2026drivaerrim,
   author    = {Xia, Chao and Lewerth, Carl and Zeng, Xi and Vdovin, Alexey and Sebben, Simone and Jia, Qing and Yang, Zhigang},
-  title     = {DrivAerRim: A computational fluid dynamics dataset for data-driven analysis of wheel rim aerodynamics},
+  title     = {DrivAerRim: A full-vehicle CFD dataset for wheel rim aerodynamics},
   year      = {2026},
   publisher = {Hugging Face},
   url       = {https://huggingface.co/datasets/BeyondXia1212/DrivAerRim}
