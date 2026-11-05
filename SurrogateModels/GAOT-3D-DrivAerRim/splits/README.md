@@ -1,19 +1,20 @@
 # GAOT-3D case ID lists
 
-Enter one case ID per line, using the case names from the dataset order file
-(for example, `Wheel_FL_0006`). Keep the files header-free. Blank lines are
-ignored.
+The supplied files define six optional training subsets and shared validation
+and test sets for DrivAerRim. Each header-free file contains one front-left wheel
+sample ID per line, using the dataset case names (for example, `Wheel_FL_0006`).
+Blank lines are ignored.
 
 The two files in this directory are shared by all training cases:
 
-| File | Expected IDs |
+| File | IDs |
 | --- | ---: |
 | `validation_ids.txt` | 92 |
 | `test_ids.txt` | 92 |
 
-Each subfolder contains a `train_ids.txt` for one training case:
+Each subfolder contains a `train_ids.txt` for one training subset:
 
-| Case | Subfolder | Expected training IDs | Fraction of training pool |
+| Case | Subfolder | Training IDs | Fraction of training pool |
 | --- | --- | ---: | ---: |
 | 1 | `case_01_train_720` | 720 | 100% |
 | 2 | `case_02_train_576` | 576 | 80% |
@@ -23,7 +24,8 @@ Each subfolder contains a `train_ids.txt` for one training case:
 | 6 | `case_06_train_036` | 36 | 5% |
 
 Each training list is used exactly as written; its order and membership are
-preserved. Training, validation and test IDs must not overlap.
+preserved. For each selected training subset, training, validation and test IDs
+are mutually exclusive.
 
 To use a case in a config file, set `dataset.split_dir` to this directory (or
 another split directory) and `dataset.split_name` to the selected subfolder,

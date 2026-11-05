@@ -5,6 +5,7 @@
 ### A large-scale full-vehicle CFD dataset for wheel rim aerodynamics
 
 [![Dataset](https://img.shields.io/badge/Dataset-Hugging%20Face-FFD21E?logo=huggingface&logoColor=000)](https://huggingface.co/datasets/BeyondXia1212/DrivAerRim)
+[![DOI](https://img.shields.io/badge/DOI-10.57967%2Fhf%2F11461-2A7F62)](https://doi.org/10.57967/hf/11461)
 [![License](https://img.shields.io/badge/License-CC%20BY--NC%204.0-2A7F62)](LICENSE.md)
 
 [Dataset](https://huggingface.co/datasets/BeyondXia1212/DrivAerRim) ·
@@ -14,7 +15,7 @@
 [Citation](#citation) ·
 [Contact](#contact)
 
-<img src="assets/vehicle_geometry.jpg" alt="DrivAer estateback side and front views, smooth underbody, and wheel rotation modelling used in DrivAerRim" width="100%">
+<img src="assets/vehicle_geometry.jpg" alt="DrivAer Estateback side and front views, tyre geometry, smooth and detailed underbodies, and purple wind tunnel restraint posts" width="100%">
 
 </div>
 
@@ -26,10 +27,11 @@ Only the rim geometry changes between cases. The vehicle, closed cooling configu
 
 Wheel rotation is represented using cylindrical **moving reference frame (MRF)** regions around the rims together with rotating wall boundary conditions on the tyres. This setup retains geometry-dependent flow through the rim openings while remaining practical for a large Reynolds-averaged Navier-Stokes (RANS) dataset.
 
-The release supports two complementary uses:
+The release supports:
 
-- analysis of how rim geometry changes complete vehicle and component aerodynamics;
-- development and evaluation of geometric deep learning surrogate models for aerodynamic coefficients and surface or flow fields.
+- aerodynamic assessment of diverse rim designs at the full-vehicle and component levels;
+- development and evaluation of surrogate models for aerodynamic coefficients and surface or flow fields;
+- aerodynamic optimisation and generative design for wheel rim development and vehicle drag reduction.
 
 ## At a glance
 
@@ -43,8 +45,13 @@ The release supports two complementary uses:
 | Turbulence model | Realizable $k$-$\varepsilon$ two-layer model |
 | Wheel treatment | Rim MRF regions and rotating wall tyres |
 | Inlet speed | 140 km/h |
+| Solver iterations per case | 3000 |
+| Averaging window | Final 500 solver iterations |
+| Convergence criterion | $R_{C_D}=\max(C_D)-\min(C_D)\leq0.003$ over the final 500 iterations |
 | Main formats | STL, CSV, VTP, VTU, WebP, and PNG |
 | Data host | [Hugging Face Datasets](https://huggingface.co/datasets/BeyondXia1212/DrivAerRim) |
+| Dataset DOI | [10.57967/hf/11461](https://doi.org/10.57967/hf/11461) |
+| Cited dataset revision | `b4831bd` |
 
 ## Rim diversity
 
@@ -77,6 +84,10 @@ The Hugging Face data repository uses the following file patterns:
 
 ```text
 DrivAerRim/
+├── Dataset_Splits/
+│   ├── validation_ids.txt
+│   ├── test_ids.txt
+│   └── case_XX_train_NNN/train_ids.txt
 ├── NumData/
 │   ├── Force_Coefficients_Combined.csv
 │   └── Cd_Accumulated_Combined.csv
@@ -176,6 +187,38 @@ The surface field overviews below compare the front left wheel for the 50 lowest
   <em>Skin friction coefficient on the front left wheel.</em>
 </p>
 
+
+#### Representative surface and flow data
+
+The following panels show `Rim0265`, corresponding to Figure 9c-f of the manuscript.
+
+<table>
+  <tr>
+    <td width="50%" align="center">
+      <img src="assets/rim0265_pressure_streamlines_slices.png" alt="Figure 9c: Rim0265 surface pressure, streamlines and total pressure coefficient slices, with the original colour scales" width="100%">
+      <br>
+      <em>(c) Surface pressure, streamlines and total pressure coefficient slices.</em>
+    </td>
+    <td width="50%" align="center">
+      <img src="assets/rim0265_skin_friction_velocity.png" alt="Figure 9d: Rim0265 skin-friction coefficient, wall shear stress oil flow patterns and streamwise velocity planes, with the original colour scales" width="100%">
+      <br>
+      <em>(d) Skin-friction coefficient, wall shear stress oil flow patterns and streamwise velocity planes.</em>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" align="center">
+      <img src="assets/rim0265_q_criterion.png" alt="Figure 9e: Q equals 2000 per second squared isosurfaces coloured by streamwise vorticity from minus 20 to 20 per second" width="100%">
+      <br>
+      <em>(e) Q = 2000 s<sup>-2</sup> isosurfaces, coloured by streamwise vorticity from -20 to 20 s<sup>-1</sup>.</em>
+    </td>
+    <td width="50%" align="center">
+      <img src="assets/rim0265_total_pressure_isosurface.png" alt="Figure 9f: Rim0265 total pressure coefficient isosurface at zero" width="100%">
+      <br>
+      <em>(f) Total pressure coefficient isosurface, C<sub>p,tot</sub> = 0.</em>
+    </td>
+  </tr>
+</table>
+
 ## Code
 
 The [`Codes/`](Codes/) directory contains the released workflow and analysis scripts:
@@ -193,11 +236,12 @@ The [`Codes/`](Codes/) directory contains the released workflow and analysis scr
 
 ## Surrogate models
 
-The [`Surrogate Models/Dataset_Splits/`](Surrogate%20Models/Dataset_Splits/)
-directory provides the fixed case IDs used for the six GAOT-3D training-set
-sizes, together with the shared validation and test sets. The
-[`Surrogate Models/GAOT-3D/`](Surrogate%20Models/GAOT-3D/) directory is reserved
-for the corresponding model implementation.
+An optional [GAOT-3D example](SurrogateModels/GAOT-3D-DrivAerRim/)
+provides VTP preprocessing, model training and evaluation tools for pressure
+and wall shear stress prediction. Its predefined case-ID lists are available
+in [`splits/`](SurrogateModels/GAOT-3D-DrivAerRim/splits/), with six training
+set sizes and shared validation and test sets. These additional resources
+support independent experiments using DrivAerRim.
 
 ## Download
 
@@ -251,14 +295,16 @@ CSV files can be read using standard tabular data tools. VTP and VTU files can b
 
 ## Citation
 
-The accompanying manuscript is in preparation. Until a formal publication identifier is available, please cite the dataset as follows:
+Please cite the DOI-registered dataset release as follows:
 
 ```bibtex
 @dataset{xia2026drivaerrim,
-  author    = {Xia, Chao and Lewerth, Carl and Zeng, Xi and Vdovin, Alexey and Sebben, Simone and Jia, Qing and Yang, Zhigang},
-  title     = {DrivAerRim: A large-scale full-vehicle CFD dataset for wheel rim aerodynamics},
+  author    = {Xia, Chao and Sebben, Simone and Zeng, Xi and Vdovin, Alexey and Wei, Huanxia and Lewerth, Carl and Jia, Qing and Yang, Zhigang},
+  title     = {DrivAerRim},
   year      = {2026},
   publisher = {Hugging Face},
+  doi       = {10.57967/hf/11461},
+  version   = {b4831bd},
   url       = {https://huggingface.co/datasets/BeyondXia1212/DrivAerRim}
 }
 ```

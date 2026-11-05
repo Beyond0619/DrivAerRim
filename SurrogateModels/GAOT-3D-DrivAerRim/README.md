@@ -2,6 +2,8 @@
 
 This project preprocesses DrivAerRim VTP files into PyTorch Geometric samples, then trains and evaluates GAOT-3D models for pressure or wall shear stress (WSS) prediction.
 
+The DrivAerRim data release is available on [Hugging Face](https://doi.org/10.57967/hf/11461) (DOI: `10.57967/hf/11461`, revision `b4831bd`). This optional example provides a starting point for independent surrogate-model experiments.
+
 ## Quick start
 
 The workflow is:

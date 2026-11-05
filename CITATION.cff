@@ -3,17 +3,17 @@ message: >-
   If you use DrivAerRim, please cite the dataset and the source DeepWheel
   collection. Also cite the accompanying DrivAerRim article when its formal
   publication identifier becomes available.
-title: >-
-  DrivAerRim: A full vehicle dataset with rotating wheels for data-driven
-  aerodynamic design of wheel rims
+title: DrivAerRim
 type: dataset
+doi: 10.57967/hf/11461
+version: b4831bd
 authors:
   - family-names: Xia
     given-names: Chao
     affiliation: Chalmers University of Technology
     email: chao.xia@chalmers.se
-  - family-names: Lewerth
-    given-names: Carl
+  - family-names: Sebben
+    given-names: Simone
     affiliation: Chalmers University of Technology
   - family-names: Zeng
     given-names: Xi
@@ -21,8 +21,11 @@ authors:
   - family-names: Vdovin
     given-names: Alexey
     affiliation: Chalmers University of Technology
-  - family-names: Sebben
-    given-names: Simone
+  - family-names: Wei
+    given-names: Huanxia
+    affiliation: Tongji University
+  - family-names: Lewerth
+    given-names: Carl
     affiliation: Chalmers University of Technology
   - family-names: Jia
     given-names: Qing
@@ -52,3 +55,5 @@ keywords:
   - moving reference frame
   - geometric deep learning
   - surrogate modelling
+  - aerodynamic optimisation
+  - generative design
