@@ -12,9 +12,6 @@ authors:
     given-names: Chao
     affiliation: Chalmers University of Technology
     email: chao.xia@chalmers.se
-  - family-names: Sebben
-    given-names: Simone
-    affiliation: Chalmers University of Technology
   - family-names: Zeng
     given-names: Xi
     affiliation: Tongji University
@@ -24,6 +21,9 @@ authors:
   - family-names: Wei
     given-names: Huanxia
     affiliation: Tongji University
+  - family-names: Sebben
+    given-names: Simone
+    affiliation: Chalmers University of Technology
   - family-names: Lewerth
     given-names: Carl
     affiliation: Chalmers University of Technology
@@ -37,11 +37,11 @@ date-released: "2026-07-07"
 url: https://huggingface.co/datasets/BeyondXia1212/DrivAerRim
 license: CC-BY-NC-4.0
 abstract: >-
-  DrivAerRim is a full vehicle computational fluid dynamics dataset that
+  DrivAerRim is a full-vehicle computational fluid dynamics dataset that
   isolates the aerodynamic effects of rim geometry. It contains steady RANS
   simulations of 904 non-parametric DeepWheel rim geometries installed on a
-  fixed, full scale DrivAer estateback. Rim rotation is represented using
-  moving reference frame regions and tyre rotation using rotating wall
+  common full-scale DrivAer Estateback configuration. Rim rotation is
+  represented using moving reference frame regions and tyre rotation using rotating wall
   boundary conditions. The release contains geometry, integrated aerodynamic
   coefficients, accumulated drag, surface pressure and wall shear stress,
   prescribed slices, local wheel volumes, a wake volume, a volume surrounding

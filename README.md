@@ -4,6 +4,8 @@
 
 ### A large-scale full-vehicle CFD dataset for wheel rim aerodynamics
 
+**Authors:** Chao Xia, Xi Zeng, Alexey Vdovin, Huanxia Wei, Simone Sebben, Carl Lewerth, Qing Jia, and Zhigang Yang.
+
 [![Dataset](https://img.shields.io/badge/Dataset-Hugging%20Face-FFD21E?logo=huggingface&logoColor=000)](https://huggingface.co/datasets/BeyondXia1212/DrivAerRim)
 [![DOI](https://img.shields.io/badge/DOI-10.57967%2Fhf%2F11461-2A7F62)](https://doi.org/10.57967/hf/11461)
 [![License](https://img.shields.io/badge/License-CC%20BY--NC%204.0-2A7F62)](LICENSE.md)
@@ -15,13 +17,15 @@
 [Citation](#citation) ·
 [Contact](#contact)
 
-<img src="assets/vehicle_geometry.jpg" alt="DrivAer Estateback side and front views, tyre geometry, smooth and detailed underbodies, and purple wind tunnel restraint posts" width="100%">
+<img src="assets/vehicle_geometry.jpg" alt="DrivAer Estateback side and front views, smooth underbody, and wheel MRF region" width="100%">
+<br>
+<em>Dataset geometry: side and front views, smooth underbody, and wheel rotation modelling.</em>
 
 </div>
 
 ## Overview
 
-**DrivAerRim** is a full vehicle computational fluid dynamics (CFD) dataset created to isolate the aerodynamic effects of rim geometry. It contains simulations of all **904 non-parametric rim geometries** from the [DeepWheel](https://huggingface.co/datasets/KAIST-SmartDesignLab/DeepWheel) collection installed on a fixed, full scale DrivAer estateback.
+**DrivAerRim** is a full-vehicle computational fluid dynamics (CFD) dataset created to isolate the aerodynamic effects of rim geometry. It contains simulations of all **904 non-parametric rim geometries** from the [DeepWheel](https://huggingface.co/datasets/KAIST-SmartDesignLab/DeepWheel) collection installed on a common full-scale DrivAer Estateback configuration.
 
 Only the rim geometry changes between cases. The vehicle, closed cooling configuration, smooth underbody, deformed Rain tyres, wheel positions, operating conditions, mesh strategy, solver settings, and exported quantities remain consistent. Each case uses the same rim design at all four wheel positions.
 
@@ -39,7 +43,7 @@ The release supports:
 |---|---|
 | Cases | 904, named `Rim0001` to `Rim0904` |
 | Total file size | Approximately 9.32 TB (8.48 TiB) |
-| Vehicle | Full scale DrivAer estateback, closed cooling, smooth underbody |
+| Vehicle | Full-scale DrivAer Estateback, closed cooling, smooth underbody |
 | Tyres | Deformed Rain pattern with longitudinal grooves and ground contact patches |
 | CFD method | Three-dimensional steady incompressible RANS |
 | Turbulence model | Realizable $k$-$\varepsilon$ two-layer model |
@@ -190,34 +194,21 @@ The surface field overviews below compare the front left wheel for the 50 lowest
 
 #### Representative surface and flow data
 
-The following panels show `Rim0265`, corresponding to Figure 9c-f of the manuscript.
+Representative surface and flow fields for `Rim0265` are shown below.
 
-<table>
-  <tr>
-    <td width="50%" align="center">
-      <img src="assets/rim0265_pressure_streamlines_slices.png" alt="Figure 9c: Rim0265 surface pressure, streamlines and total pressure coefficient slices, with the original colour scales" width="100%">
-      <br>
-      <em>(c) Surface pressure, streamlines and total pressure coefficient slices.</em>
-    </td>
-    <td width="50%" align="center">
-      <img src="assets/rim0265_skin_friction_velocity.png" alt="Figure 9d: Rim0265 skin-friction coefficient, wall shear stress oil flow patterns and streamwise velocity planes, with the original colour scales" width="100%">
-      <br>
-      <em>(d) Skin-friction coefficient, wall shear stress oil flow patterns and streamwise velocity planes.</em>
-    </td>
-  </tr>
-  <tr>
-    <td width="50%" align="center">
-      <img src="assets/rim0265_q_criterion.png" alt="Figure 9e: Q equals 2000 per second squared isosurfaces coloured by streamwise vorticity from minus 20 to 20 per second" width="100%">
-      <br>
-      <em>(e) Q = 2000 s<sup>-2</sup> isosurfaces, coloured by streamwise vorticity from -20 to 20 s<sup>-1</sup>.</em>
-    </td>
-    <td width="50%" align="center">
-      <img src="assets/rim0265_total_pressure_isosurface.png" alt="Figure 9f: Rim0265 total pressure coefficient isosurface at zero" width="100%">
-      <br>
-      <em>(f) Total pressure coefficient isosurface, C<sub>p,tot</sub> = 0.</em>
-    </td>
-  </tr>
-</table>
+<p align="center">
+  <img src="assets/rim0265_pressure_streamlines_slices.png" alt="Rim0265 surface pressure, streamlines and total pressure coefficient slices" width="49%">
+  <img src="assets/rim0265_skin_friction_velocity.png" alt="Rim0265 skin-friction coefficient, wall shear stress oil flow patterns and streamwise velocity planes" width="49%">
+  <br>
+  <em>Left: surface pressure, streamlines and total pressure coefficient slices. Right: skin-friction coefficient, wall shear stress oil flow patterns and streamwise velocity planes.</em>
+</p>
+
+<p align="center">
+  <img src="assets/rim0265_q_criterion.png" alt="Rim0265 Q equals 2000 per second squared isosurfaces coloured by streamwise vorticity" width="49%">
+  <img src="assets/rim0265_total_pressure_isosurface.png" alt="Rim0265 total pressure coefficient isosurface at zero" width="49%">
+  <br>
+  <em>Left: Q = 2000 s<sup>-2</sup> isosurfaces, coloured by streamwise vorticity from -20 to 20 s<sup>-1</sup>. Right: total pressure coefficient isosurface, C<sub>p,tot</sub> = 0.</em>
+</p>
 
 ## Code
 
@@ -295,11 +286,11 @@ CSV files can be read using standard tabular data tools. VTP and VTU files can b
 
 ## Citation
 
-Please cite the DOI-registered dataset release as follows:
+Please cite DrivAerRim as follows:
 
 ```bibtex
 @dataset{xia2026drivaerrim,
-  author    = {Xia, Chao and Sebben, Simone and Zeng, Xi and Vdovin, Alexey and Wei, Huanxia and Lewerth, Carl and Jia, Qing and Yang, Zhigang},
+  author    = {Xia, Chao and Zeng, Xi and Vdovin, Alexey and Wei, Huanxia and Sebben, Simone and Lewerth, Carl and Jia, Qing and Yang, Zhigang},
   title     = {DrivAerRim},
   year      = {2026},
   publisher = {Hugging Face},
