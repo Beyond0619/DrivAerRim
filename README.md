@@ -49,13 +49,8 @@ The release supports:
 | Turbulence model | Realizable $k$-$\varepsilon$ two-layer model |
 | Wheel treatment | Rim MRF regions and rotating wall tyres |
 | Inlet speed | 140 km/h |
-| Solver iterations per case | 3000 |
-| Averaging window | Final 500 solver iterations |
-| Convergence criterion | $R_{C_D}=\max(C_D)-\min(C_D)\leq0.003$ over the final 500 iterations |
-| Main formats | STL, CSV, VTP, VTU, WebP, and PNG |
 | Data host | [Hugging Face Datasets](https://huggingface.co/datasets/BeyondXia1212/DrivAerRim) |
 | Dataset DOI | [10.57967/hf/11461](https://doi.org/10.57967/hf/11461) |
-| Cited dataset revision | `b4831bd` |
 
 ## Rim diversity
 
@@ -69,7 +64,7 @@ The dataset covers the complete set of 904 DeepWheel designs rather than a small
 
 1. **Rim preprocessing:** the STL meshes are repaired, scaled, and assembled with the DrivAer wheels.
 2. **Automated batch CFD:** case preparation, meshing, solution, monitoring, and postprocessing are executed through an automated high performance computing workflow.
-3. **Exported data:** each completed case provides numerical summaries, geometry, surface fields, prescribed slices, local wheel volumes, a wake volume, a volume surrounding the complete vehicle, preview images, and convergence histories.
+3. **Data Export:** each completed case provides numerical summaries, geometry, surface fields, prescribed slices, local wheel volumes, a wake volume, a volume surrounding the complete vehicle, preview images, and convergence histories.
 
 ## Dataset contents
 
