@@ -14,6 +14,7 @@
 [Files](https://huggingface.co/datasets/BeyondXia1212/DrivAerRim/tree/main) ·
 [Scripts](Codes/) ·
 [Surrogate models](#surrogate-models) ·
+[Preprint](https://arxiv.org/abs/2611.08842) ·
 [Citation](#citation) ·
 [Contact](#contact)
 
@@ -281,7 +282,7 @@ CSV files can be read using standard tabular data tools. VTP and VTU files can b
 
 ## Citation
 
-Please cite DrivAerRim as follows:
+Please cite the DrivAerRim dataset as follows:
 
 ```bibtex
 @dataset{xia2026drivaerrim,
@@ -295,11 +296,15 @@ Please cite DrivAerRim as follows:
 }
 ```
 
+Please also cite the accompanying preprint:
+
+> Xia, C. et al. DrivAerRim: A large-scale full-vehicle CFD dataset for wheel rim aerodynamics. *arXiv* **2611.08842** [cs.CE] (2026). [https://doi.org/10.48550/arXiv.2611.08842](https://doi.org/10.48550/arXiv.2611.08842)
+
 Please also cite the source rim collection:
 
 > Yoo, S. & Kang, N. DeepWheel: Generating a 3D Synthetic Wheel Dataset for Design and Performance Evaluation. *Journal of Mechanical Design* **148**, 051702 (2026). [https://doi.org/10.1115/1.4069899](https://doi.org/10.1115/1.4069899)
 
-The machine-readable metadata are provided in [`CITATION.cff`](CITATION.cff). Please also cite the accompanying DrivAerRim article once its formal publication identifier becomes available, while retaining the dataset and source geometry citations.
+Machine-readable dataset metadata are provided in [`CITATION.cff`](CITATION.cff). Please retain the dataset, preprint, and source-geometry citations when reusing DrivAerRim.
 
 ## License and provenance
 

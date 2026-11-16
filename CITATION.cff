@@ -1,8 +1,7 @@
 cff-version: 1.2.0
 message: >-
-  If you use DrivAerRim, please cite the dataset and the source DeepWheel
-  collection. Also cite the accompanying DrivAerRim article when its formal
-  publication identifier becomes available.
+  If you use DrivAerRim, please cite the dataset, the accompanying preprint
+  (arXiv:2611.08842), and the source DeepWheel collection.
 title: DrivAerRim
 type: dataset
 doi: 10.57967/hf/11461
